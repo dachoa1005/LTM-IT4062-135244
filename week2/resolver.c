@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
     if (argc == 2)
     {
         strcpy(parameter, argv[1]);
-        printf("The parameter is: %s \n", parameter);
+        // printf("The parameter is: %s \n", parameter);
     }
     else
     {
@@ -32,50 +32,74 @@ int main(int argc, char const *argv[])
     // define that parameter is a domain name or ip address
     if (isalpha(parameter[0]))
     {
-        printf("The parameter is a domain name \n");
+        // printf("The parameter is a domain name \n");
         hostname = 1;
     }
     else
     {
-        printf("The parameter is an ip address \n");
+        // printf("The parameter is an ip address \n");
         hostname = 0;
     }
 
     struct hostent *host_entry;
 
-    // get IP address from domain name
     if (hostname == 1)
     {
+        // get ip address from domain name
         struct hostent *host_entry = gethostbyname(parameter);
         if (host_entry == NULL)
         {
-            printf("Error: %s\n", hstrerror(h_errno));
+            printf("Not found information\n");
         }
         else
         {
-            printf("Host name: %s\n", host_entry->h_name);
+            // printf("Host name: %s\n", host_entry->h_name);
             printf("Official IP: %s\n", inet_ntoa(*(struct in_addr *)host_entry->h_addr_list[0]));
             printf("All IP addresses: \n");
             int i = 0;
-            while (host_entry->h_addr_list[i] != NULL)
+            if(host_entry->h_addr_list[1] == NULL)
+            {   
+                printf("No other IP address \n");
+            }
+            else
             {
-                printf("%s\n", inet_ntoa(*(struct in_addr *)host_entry->h_addr_list[i]));
-                i++;
+                while (host_entry->h_addr_list[i] != NULL)
+                {
+                    printf("%s \n", inet_ntoa(*(struct in_addr *)host_entry->h_addr_list[i]));
+                    i++;
+                }
             }
         }
     }
-
-    // get domain name from IP address
-    struct in_addr **addr_list;
-    struct hostent *host = gethostbyaddr(host_entry->h_addr_list[0], sizeof(host_entry->h_addr_list[0]), AF_INET);
-    if (host == NULL)
+    else // hostname == 0
     {
-        printf("Error: %s\n", hstrerror(h_errno));
+        // get domain name from ip address
+        struct in_addr addr;
+        inet_aton(parameter, &addr);
+        host_entry = gethostbyaddr(&addr, sizeof(addr), AF_INET);
+        if (host_entry == NULL)
+        {
+            printf("Not found information\n");
+        }
+        else
+        {
+            printf("Offical name: %s\n", host_entry->h_name);
+            printf("Official IP: %s\n", inet_ntoa(*(struct in_addr *)host_entry->h_addr_list[0]));
+            // print all alias name
+            printf("All alias name: \n");
+            int i = 0;
+            if (host_entry->h_aliases[0] == NULL)
+            {
+                printf("No alias name \n");
+            }
+            else
+            {
+                while (host_entry->h_aliases[i] != NULL)
+                {
+                    printf("%s\n", host_entry->h_aliases[i]);
+                    i++;
+                }
+            }
+        }
     }
-    else
-    {
-        printf("Host name: %s\n", host->h_name);
-        printf("IP address: %s\n", inet_ntoa(*(struct in_addr *)host->h_addr_list[0]));
-    }
-    return 0;
 }
