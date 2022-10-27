@@ -27,8 +27,8 @@ int main(int argc, char *argv[]) {
 
     if (argc == 3)
     {
-        port_number = atoi(argv[1]);
-        strcpy(IP_address, argv[2]);
+        port_number = atoi(argv[2]);
+        strcpy(IP_address, argv[1]);
     }
     else
     {
@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(port_number);
     server_address.sin_addr.s_addr = inet_addr(IP_address);
+    
     memset(server_address.sin_zero, '\0', sizeof server_address.sin_zero);
     addr_size = sizeof server_address;
 

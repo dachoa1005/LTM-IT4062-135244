@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     while (cmdEXIT == 0)
     {
         recv(Client1, buffer, 1024, 0);
-        printf ("%s\nMessage from client 1:\n", buffer);
+        printf ("\nMessage from client 1: %s\n", buffer);
         send(Client2,buffer,1024,0);
         if (compare_strings(buffer, "exit")==0)
         {   
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
         {
             memset(&buffer[0], 0, sizeof(buffer));
             recv(Client2, buffer, 1024, 0);
-            printf ("\nMessage: %s\n", buffer);
+            printf ("\nMessage from client 2: %s\n", buffer);
             send(Client1,buffer,1024,0);
             if (compare_strings(buffer, "exit")==0)
             {
