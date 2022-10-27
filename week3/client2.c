@@ -20,7 +20,21 @@ int compare_strings(char a[], char b[])
     return -1;
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    int port_number;
+    char IP_address[20];
+
+    if (argc == 3)
+    {
+        port_number = atoi(argv[1]);
+        strcpy(IP_address, argv[2]);
+    }
+    else
+    {
+        printf("Usage ./client  <IP address> <Port number>\n");
+        return 0;
+    }
+
     int clientSocket;
     char buffer[1024];
     struct sockaddr_in serverAddr;
@@ -29,8 +43,8 @@ int main() {
 
     clientSocket = socket(AF_INET, SOCK_STREAM, 0);
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(7891);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    serverAddr.sin_port = htons(port_number);
+    serverAddr.sin_addr.s_addr = inet_addr(IP_address);
     memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
     addr_size = sizeof serverAddr;
 
@@ -46,7 +60,6 @@ int main() {
                 printf("Client 1 : ");
                 printf("%s\n", buffer);
                 memset(&buffer[0], 0, sizeof(buffer));
-
             }
             else cmdEXIT = 1;
         }

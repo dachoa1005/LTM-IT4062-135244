@@ -21,32 +21,54 @@ int compare_strings(char a[], char b[])
 }
 
 
-int main() {
-    int clientSocket;
+int main(int argc, char *argv[]) {
+    int port_number;
+    char IP_address[20];
+
+    if (argc == 3)
+    {
+        port_number = atoi(argv[1]);
+        strcpy(IP_address, argv[2]);
+    }
+    else
+    {
+        printf("Usage ./client  <IP address> <Port number>\n");
+        return 0;
+    }
+    int client_socket;
     char buffer[1024];
-    struct sockaddr_in serverAddr;
+    struct sockaddr_in server_address;
     socklen_t addr_size;
     int cmdEXIT = 0;
 
-    clientSocket = socket(PF_INET, SOCK_STREAM, 0);
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(7891);
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    memset(serverAddr.sin_zero, '\0', sizeof serverAddr.sin_zero);
-    addr_size = sizeof serverAddr;
+    client_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server_address.sin_family = AF_INET;
+    server_address.sin_port = htons(port_number);
+    server_address.sin_addr.s_addr = inet_addr(IP_address);
+    memset(server_address.sin_zero, '\0', sizeof server_address.sin_zero);
+    addr_size = sizeof server_address;
 
-    connect(clientSocket, (struct sockaddr *) &serverAddr, addr_size);
+    int connect_status = connect(client_socket, (struct sockaddr *) &server_address, addr_size);
+    if (connect_status == -1)
+    {
+        printf("Connection failed\n");
+        return 0;
+    }
+    else
+    {
+        printf("Connection established\n");
+    }
 
     printf("Client 1 : ");
     scanf(" %[^\n]s", buffer);
-    send(clientSocket,buffer,sizeof buffer - 1,0);      
+    send(client_socket,buffer,sizeof buffer - 1,0);      
 
     while (cmdEXIT == 0)
     {
         if (compare_strings(buffer, "exit")==-1)
         {
             memset(&buffer[0], 0, sizeof(buffer));
-            int recvValue = recv(clientSocket, buffer, sizeof buffer - 1, 0);
+            int recvValue = recv(client_socket, buffer, sizeof buffer - 1, 0);
             if (recvValue != 1)
             {
                 if (compare_strings(buffer, "exit")==-1)
@@ -62,7 +84,7 @@ int main() {
             {
                 printf("Client 1 : ");
                 scanf(" %[^\n]s", buffer);
-                send(clientSocket,buffer,sizeof buffer - 1,0);
+                send(client_socket,buffer,sizeof buffer - 1,0);
             }
         }
         else cmdEXIT=1;
