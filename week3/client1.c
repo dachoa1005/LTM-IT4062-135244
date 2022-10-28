@@ -4,24 +4,59 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <ctype.h>
+#include <unistd.h>
 
-int compare_strings(char a[], char b[])
+char* trim(char* str)
 {
-    int c = 0;
-    while (a[c] == b[c]) 
-    {
-        if (a[c] == '\0' || b[c] == '\0')
-        break;
-        c++;
-    }
-    if (a[c] == '\0' && b[c] == '\0')
-    return 0;
-    else
-    return -1;
+    char* end;
+    while(isspace(*str)) str++;
+    if(*str == 0)  // All spaces?
+        return "";
+    end = str + strlen(str) - 1;
+    while(end > str && isspace(*end)) end--;
+    // Write new null terminator character
+    end[1] = '\0';
+    return str;
 }
 
+int string_check(char a[]) // check if string contain character other than number or alphabet
+{
+    int c = 0;
+    while (a[c] != '\0')
+    {
+        if ('a' <= c[a] && c[a] <= 'z')
+        {
+            c++;
+            continue;
+        }
+        else if ('A' <= c[a] && c[a] <= 'Z')
+        {
+            c++;
+            continue;
+        }
+        else if ('0' <= c[a] && c[a] <= '9')
+        {
+            c++;
+            continue;
+        }
+        else if (c[a] == ' ')
+        {
+            c++;
+            continue;
+        }
+        else
+        {
+            return -1;
+        }
+        return -1;
+        c++;
+    }
+    return 0;
+}
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     int port_number;
     char IP_address[20];
 
@@ -45,11 +80,11 @@ int main(int argc, char *argv[]) {
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(port_number);
     server_address.sin_addr.s_addr = inet_addr(IP_address);
-    
+
     memset(server_address.sin_zero, '\0', sizeof server_address.sin_zero);
     addr_size = sizeof server_address;
 
-    int connect_status = connect(client_socket, (struct sockaddr *) &server_address, addr_size);
+    int connect_status = connect(client_socket, (struct sockaddr *)&server_address, addr_size);
     if (connect_status == -1)
     {
         printf("Connection failed\n");
@@ -59,37 +94,25 @@ int main(int argc, char *argv[]) {
     {
         printf("Connection established\n");
     }
-
-    printf("Client 1 : ");
-    scanf(" %[^\n]s", buffer);
-    send(client_socket,buffer,sizeof buffer - 1,0);      
-
+    // printf("%d", cmdEXIT);
     while (cmdEXIT == 0)
     {
-        if (compare_strings(buffer, "exit")==-1)
+        if (strcmp(trim(buffer), "") != 0)
         {
-            memset(&buffer[0], 0, sizeof(buffer));
-            int recvValue = recv(client_socket, buffer, sizeof buffer - 1, 0);
-            if (recvValue != 1)
-            {
-                if (compare_strings(buffer, "exit")==-1)
-                {
-                    printf("Client 2 : ");
-                    printf("%s\n", buffer);
-                    
-                    memset(&buffer[0], 0, sizeof(buffer));
-                }
-                else cmdEXIT=1;
-            }
-            else
-            {
-                printf("Client 1 : ");
-                scanf(" %[^\n]s", buffer);
-                send(client_socket,buffer,sizeof buffer - 1,0);
-            }
+            memset(buffer, 0, sizeof(buffer));
+            printf("Client 1 : ");
+            // scanf until newline 
+            fgets(buffer, sizeof(buffer), stdin);
+            buffer[strlen(buffer)-1] = '\0';
+            // printf("%ld", strlen(buffer));
+            send(client_socket, buffer, strlen(buffer), 0);
         }
-        else cmdEXIT=1;
+        else
+        {   
+            printf("exit\n");
+            send(client_socket, buffer, strlen(buffer), 0);
+            cmdEXIT = 1;
+        }
     }
-
     return 0;
 }
