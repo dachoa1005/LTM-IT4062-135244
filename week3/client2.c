@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         printf("Connection established\n");
     }
 
-    while (cmdEXIT == 0)
+    while (1)
     {
         memset(buffer, 0, sizeof(buffer));
         recv(client_socket, buffer, sizeof buffer, 0);
@@ -104,12 +104,12 @@ int main(int argc, char *argv[])
         // printf("%ld", strlen(buffer));
         if (strcmp(buffer, "") != 0)
         {
-            printf("Received message: %s\n", buffer);
+            printf("%s\n", buffer);
         }
         else
         {
-            printf("exit\n");
-            cmdEXIT = 1;
+            printf("Exit\n");
+            break;
         }
     }
     return 0;

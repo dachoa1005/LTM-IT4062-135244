@@ -71,10 +71,8 @@ int main(int argc, char *argv[])
         return 0;
     }
     int client_socket;
-    char buffer[1024];
     struct sockaddr_in server_address;
     socklen_t addr_size;
-    int cmdEXIT = 0;
 
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     server_address.sin_family = AF_INET;
@@ -95,12 +93,14 @@ int main(int argc, char *argv[])
         printf("Connection established\n");
     }
     // printf("%d", cmdEXIT);
-    while (cmdEXIT == 0)
+    // int cmdEXIT = 0;
+    char buffer[1024] = "a";
+    while (1)
     {
         if (strcmp(trim(buffer), "") != 0)
         {
             memset(buffer, 0, sizeof(buffer));
-            printf("Client 1 : ");
+            // printf("Client 1 : ");
             // scanf until newline 
             fgets(buffer, sizeof(buffer), stdin);
             buffer[strlen(buffer)-1] = '\0';
@@ -109,9 +109,9 @@ int main(int argc, char *argv[])
         }
         else
         {   
-            printf("exit\n");
+            printf("Exit\n");
             send(client_socket, buffer, strlen(buffer), 0);
-            cmdEXIT = 1;
+            break;
         }
     }
     return 0;

@@ -25,22 +25,22 @@ int string_check(char a[]) // check if string contain character other than numbe
     int c = 0;
     while (a[c] != '\0')
     {
-        if ('a' <= c[a] && c[a] <= 'z')
+        if ('a' <= a[c] && a[c] <= 'z')
         {
             c++;
             continue;
         }
-        else if ('A' <= c[a] && c[a] <= 'Z')
+        else if ('A' <= a[c] && a[c] <= 'Z')
         {
             c++;
             continue;
         }
-        else if ('0' <= c[a] && c[a] <= '9')
+        else if ('0' <= a[c] && a[c] <= '9')
         {
             c++;
             continue;
         }
-        else if (c[a] == ' ')
+        else if (a[c] == ' ')
         {
             c++;
             continue;
@@ -55,17 +55,40 @@ int string_check(char a[]) // check if string contain character other than numbe
     return 0;
 }
 
-void split_string(char str[])
+void split_string(char* str)
 {
+    char* str_num;
+    str_num = malloc(strlen(str));
+    char* str_char;
+    str_char = malloc(strlen(str));
     int i=0;
     while(i < strlen(str))
     {
         if ('0' <= str[i] && str[i] <= '9')
         {
-
+            char temp = str[i];
+            strncat(str_num, &temp, 1);
+        } else if ('a' <= str[i] && str[i] <= 'z' || 'A' <= str[i] && str[i] <= 'Z')
+        {
+            char temp = str[i];
+            strncat(str_char, &temp, 1);
+        }
+        i++;
+    }
+    char *result = malloc(sizeof(char) * (strlen(str_num) + strlen(str_char) + 1));
+    strcpy(result, str_num);
+    char temp = '\n';
+    if (strcmp(str_num,"") != 0)
+    {
+        if (strcmp(str_char,"") != 0)
+        {
+            strncat(result, &temp, 1);
         }
     }
+    strcat(result, str_char);
+    strcpy(str, result);
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -108,8 +131,8 @@ int main(int argc, char *argv[])
     if (Client2 != -1)
         printf("Client 2 has connected\n");
 
-    int cmdEXIT = 0;
-    while (cmdEXIT == 0)
+    
+    while (1)
     {
         memset(buffer, '\0', 1024);
         int bytes_recv = recv(Client1, buffer, 1024, 0);
@@ -120,17 +143,27 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("Client 1: %s \n", trim(buffer));
+            // printf("Client 1: %s \n", buffer);
+            
             // printf("%ld\n", strlen(buffer));
             if (strcmp((trim(buffer)),"") == 0)
             {
-                printf("exit\n");
+                printf("Exit\n");
                 send(Client2, buffer, strlen(buffer), 0);
-                cmdEXIT = 1;
+                break;
+            } 
+            else if (string_check(buffer) == -1)
+            {
+                printf("Message Error\n");
+                send(Client2, "Error", strlen("Error"), 0);
             }
             else
             {
-                send(Client2, buffer, strlen(buffer), 0);
+                char *temp_buffer = malloc(strlen(buffer));
+                strcpy(temp_buffer, buffer);
+                split_string(temp_buffer);
+                printf("%s\n", temp_buffer);
+                send(Client2, temp_buffer, strlen(temp_buffer), 0);
             }
         }
     }
