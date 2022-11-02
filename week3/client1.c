@@ -25,22 +25,22 @@ int string_check(char a[]) // check if string contain character other than numbe
     int c = 0;
     while (a[c] != '\0')
     {
-        if ('a' <= c[a] && c[a] <= 'z')
+        if ('a' <= a[c] && a[c] <= 'z')
         {
             c++;
             continue;
         }
-        else if ('A' <= c[a] && c[a] <= 'Z')
+        else if ('A' <= a[c] && a[c] <= 'Z')
         {
             c++;
             continue;
         }
-        else if ('0' <= c[a] && c[a] <= '9')
+        else if ('0' <= a[c] && a[c] <= '9')
         {
             c++;
             continue;
         }
-        else if (c[a] == ' ')
+        else if (a[c] == ' ')
         {
             c++;
             continue;
