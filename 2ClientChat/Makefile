@@ -11,5 +11,5 @@ client2.o: client2.c
 	gcc -c client2.c
 client2: client2.o
 	gcc -o client2 client2.o
-clean: client2
-	rm -f *.o server client1
+clean:
+	rm -f *.o server client1 client2
