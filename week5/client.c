@@ -100,6 +100,7 @@ int main(int argc, char *argv[])
     char buffer[1024];
     while (choice != 3)
     {
+        printf("\n_____________________________________\n");
         printf("Menu:\n");
         printf("1. Send message\n");
         printf("2. Send file's content\n");
@@ -139,25 +140,37 @@ int main(int argc, char *argv[])
         case 2:
         {
             send(client_socket, &choice, sizeof(choice), 0);
-            char file_name[1024];
-            printf("Enter file name: ");
-            scanf("%s", file_name);
-            FILE *fp = fopen(file_name, "r");
-            if (fp == NULL)
+            int total_bytes_sent = 0;
+            int bytes_sent = 0;
+            int file_size = 0;
+            char file_path[1024];
+            char buffer[1024];
+            printf("Enter file path: ");
+            scanf("%[^\n]%*c", file_path);
+            FILE *fp = fopen(file_path, "r");
+            
+            // get file size
+            fseek(fp, 0, SEEK_END);
+            file_size = ftell(fp);
+            rewind(fp);
+
+            // send file size
+            send(client_socket, &file_size, sizeof(file_size), 0);
+
+            while (total_bytes_sent < file_size)
             {
-                printf("File not found\n");
-                break;
-            }
-            else
-            {
-                send(client_socket, file_name, 100, 0); //send file name to server
-                while (fgets(buffer, 1024, fp) != NULL)
+                if (file_size - total_bytes_sent < 1024)
                 {
-                    send(client_socket, buffer, 1024, 0);
-                    memset(buffer, '\0', 1024);
+                    bytes_sent = fread(buffer, 1, file_size - total_bytes_sent, fp);
+                    send(client_socket, buffer, bytes_sent, 0);
+                    total_bytes_sent += bytes_sent;
                 }
-                send(client_socket, buffer, 1024, 0);
-                fclose(fp);
+                else
+                {
+                    bytes_sent = fread(buffer, 1, 1024, fp);
+                    send(client_socket, buffer, bytes_sent, 0);
+                    total_bytes_sent += bytes_sent;
+                }
             }
             break;
         }

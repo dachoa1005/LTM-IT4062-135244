@@ -62,6 +62,7 @@ int main(int argc, char *argv[])
 
     while (cmd != 3)
     {
+        printf("Waiting for command from client\n");
         recv(Client1, &cmd, sizeof(cmd), 0);
         printf("cmd: %d\n", cmd);
         switch (cmd)
@@ -93,8 +94,28 @@ int main(int argc, char *argv[])
         }
         case 2:
         {
-            printf("Receive file's content from client\n");
-            char filename[1024];
+            int total_bytes_recv = 0;
+            int bytes_recv = 0;
+            int file_size = 0;
+
+            printf("Recieve file from client\n");
+            // Recieve file size
+            recv(Client1, &file_size, sizeof(file_size), 0);
+            printf("File size: %d\n", file_size);
+            // Recieve file
+            while (total_bytes_recv < file_size)
+            {
+                memset(buffer, '\0', 1024);
+                bytes_recv = recv(Client1, buffer, 1024, 0);
+                if (bytes_recv == -1)
+                {
+                    printf("Receive failed\n");
+                    break;
+                }
+                total_bytes_recv += bytes_recv;
+                printf("%s", buffer);
+            }
+            printf("\n");
             break;
         }
         case 3:
@@ -110,7 +131,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    close(Client1);
-    close(welcomeSocket);
-    return 0;
+close(Client1);
+close(welcomeSocket);
+return 0;
 }
