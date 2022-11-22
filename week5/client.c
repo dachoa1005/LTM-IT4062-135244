@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     client_socket = socket(AF_INET, SOCK_STREAM, 0);
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(port_number);
-    server_address.sin_addr.s_addr = inet_addr(IP_address);
+    server_address.sin_addr.s_addr = inet_addr(IP_address); //test hello
 
     memset(server_address.sin_zero, '\0', sizeof server_address.sin_zero);
     addr_size = sizeof server_address;
