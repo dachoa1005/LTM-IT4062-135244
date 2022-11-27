@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
     
     while (1)
     {
-        
-        recv(Client1, buffer, 200, 0);
+        recv(Client1, buffer, 100, 0);
+        printf("Received: %s\n", buffer);
         char temp_username[100];
         char temp_password[100];
         strcpy(temp_username, strtok(buffer, " "));
@@ -87,23 +87,23 @@ int main(int argc, char *argv[])
                 {
                     if (user[i].status == 1)
                     {
-                        send(Client1, "Login success", strlen("Login success"), 0);
+                        send(Client1, "Login success", 100, 0);
                         break;
                     }
                     else if (user[i].status == 0)
                     {
-                        send(Client1, "Account is locked", strlen("Account is locked"), 0);
+                        send(Client1, "Account is locked", 100, 0);
                         break;
                     }
                 }
                 else 
                 {
-                    send(Client1, "Wrong password", strlen("Wrong password"), 0);
+                    send(Client1, "Wrong password", 100, 0);
                     break;
                 }
             } else if (i == arr_user_size - 1)
             {
-                send(Client1, "Account not found", strlen("Account not found"), 0);
+                send(Client1, "Account not found", 100, 0);
             }   
         }
     }

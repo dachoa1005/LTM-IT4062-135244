@@ -101,22 +101,6 @@ int main(int argc, char *argv[])
     char message[200];
     while (1)
     {
-        // if (strcmp(trim(buffer), "") != 0)
-        // {
-        //     memset(buffer, 0, sizeof(buffer));
-        //     // printf("Client 1 : ");
-        //     // scanf until newline 
-        //     fgets(buffer, sizeof(buffer), stdin);
-        //     buffer[strlen(buffer)-1] = '\0';
-        //     // printf("%ld", strlen(buffer));
-        //     send(client_socket, buffer, strlen(buffer), 0);
-        // }
-        // else
-        // {   
-        //     printf("Exit\n");
-        //     send(client_socket, buffer, strlen(buffer), 0);
-        //     break;
-        // }
         printf("Enter username: ");
         fgets(username, sizeof(username), stdin);
         username[strlen(username)-1] = '\0';
@@ -128,8 +112,9 @@ int main(int argc, char *argv[])
         strcpy(message, username);
         strcat(message, " ");
         strcat(message, password);
+        message[strlen(message)] = '\0';
 
-        send(client_socket, message, strlen(message), 0);
+        send(client_socket, message, 200, 0);
         memset(buffer, 0, sizeof(buffer));
         recv(client_socket, buffer, 1024, 0);
         printf("%s\n", buffer);
